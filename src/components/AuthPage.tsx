@@ -34,8 +34,9 @@ export default function AuthPage(){
         });
         if (error) throw error;
         setSuccessMsg("Magic link sent! Check your inbox.");
-      } catch (err: any) {
-        setErrorMsg(err?.message || "Something went wrong"); //if there in the error we throw message use it else put the "Something went wrong"
+      } catch (err: unknown) {
+        const msg = err instanceof Error ? err.message : "There is an error in sending";
+        setErrorMsg(msg); //if there in the error we throw message use it else put the "Something went wrong"
       } finally {
         setLoading(false);//both of the cases(error||sucees) this code run-> this is finally 
       }
