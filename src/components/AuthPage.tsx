@@ -30,7 +30,7 @@ export default function AuthPage(){
     try {
         const {error}=await supabase.auth.signInWithOtp({
             email: value,
-            options: { emailRedirectTo: "http://localhost:5173/todo" } //after he tap on the link in the email he direct to this site url,
+            options: { emailRedirectTo: "http://localhost:5173/welcome'" } //after he tap on the link in the email he direct to this site url,
         });
         if (error) throw error;
         setSuccessMsg("Magic link sent! Check your inbox.");
