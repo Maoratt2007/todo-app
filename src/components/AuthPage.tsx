@@ -30,7 +30,8 @@ export default function AuthPage(){
     try {
         const {error}=await supabase.auth.signInWithOtp({
             email: value,
-            options: { emailRedirectTo: "http://localhost:5173/welcome'" } //after he tap on the link in the email he direct to this site url,
+            options: { emailRedirectTo: `${window.location.origin}/welcome` }
+            //after he tap on the link in the email he direct to this site url,
         });
         if (error) throw error;
         setSuccessMsg("Magic link sent! Check your inbox.");
@@ -60,7 +61,7 @@ export default function AuthPage(){
               disabled={loading || !email.trim()}
               style={{ padding: 10, borderRadius: 8, border: "1px solid #999", cursor: "pointer" }}
             >
-              {loading ? "Sending..." : "You have click on send"}
+              {loading ? "Sending..." : "Send to my email"}
             </button>
           </form>
     
