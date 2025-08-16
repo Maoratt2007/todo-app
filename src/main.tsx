@@ -5,6 +5,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import './index.css'
 import App from './App.tsx'
 import LoadPage from './components/LoadingPage.tsx';
+import AuthPage from "./components/AuthPage.tsx";
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -12,6 +13,7 @@ createRoot(document.getElementById('root')!).render(
       <Routes>
         <Route path="/" element={<App />} />
         <Route path="/welcome" element={<LoadPage />} />
+        <Route path="/login" element={<AuthPage />} />
       </Routes>
     </BrowserRouter>
   </StrictMode>,

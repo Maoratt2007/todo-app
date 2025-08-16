@@ -3,18 +3,19 @@ import { useEffect, useRef } from "react";
 import { supabase } from "../lib/supabase";
 
 export default function LoadPage() {
-  const didRun = useRef(false);
+  const didRun = useRef(false);//valuable that dont render when he changed 
 
   useEffect(() => {
-    if (didRun.current) return; // מונע ריצה כפולה ב-StrictMode/HMR
+    if (didRun.current) return; // avoid two useEffect run from strictMode in react(this is a problem redirect two times 401 problem)
     didRun.current = true;
 
     (async () => {
       try {
-        // נותן ל-SDK לקרוא את ה-hash (#access_token/#refresh_token) ולשמור סשן
+        // get the session
         const { data: { session } } = await supabase.auth.getSession();
 
-        // לנקות את ה-URL מה-hash רק אחרי שה-SDK קרא אותו
+        //clear the paramaters in the url-avoid sdk saves again and again session(if I will open new page with the 
+        // same url I will get new session and then if I return to the url with the old session I will get error 401), and security
         if (
           window.location.hash.includes("access_token") ||
           window.location.hash.includes("type=")
@@ -22,14 +23,14 @@ export default function LoadPage() {
           window.history.replaceState({}, document.title, window.location.pathname);
         }
 
-        // ניווט בלי setState — לא יהיו "callback is no longer runnable"
+        //if there is a session go to app and he decide todopage or authpage else /login 
         window.location.replace(session ? "/" : "/login");
       } catch {
-        // בנפילות לא צפויות: נקה URL ועבור למסך התחברות
+        // clean the url and back to /login 
         window.history.replaceState({}, document.title, window.location.pathname);
         window.location.replace("/login");
       }
-    })();
+    })(); //run this function 
   }, []);
 
   return (
