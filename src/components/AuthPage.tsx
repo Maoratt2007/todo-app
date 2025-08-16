@@ -3,7 +3,7 @@ import {supabase} from '../lib/supabase';//we want to use the supabase client(th
 
 export default function AuthPage(){
  const [email,setEmail] = useState('');//we need to store the email in the state to use it in the code
- const [loading, setLoading] = useState(false);//state for if we sent the email or not 
+ const [loading, setLoading] = useState(false);//state for if we sent the email or not, if not loading 
  const [successMsg, setSuccessMsg] = useState<string | null>(null);//we need it to show the message success
  const [errorMsg, setErrorMsg] = useState<string | null>(null);//we need it to show the message error
 
@@ -25,7 +25,7 @@ export default function AuthPage(){
     }
     
     //we start our action send a email to the user 
-    setLoading(true);
+    setLoading(true);//show load... on the button
 
     try {
         const {error}=await supabase.auth.signInWithOtp({
@@ -58,7 +58,7 @@ export default function AuthPage(){
     
             <button
               type="submit"
-              disabled={loading || !email.trim()}
+              disabled={loading || !email.trim()}// the button diable if we dont type any email or its loading(process to sent email)
               style={{ padding: 10, borderRadius: 8, border: "1px solid #999", cursor: "pointer" }}
             >
               {loading ? "Sending..." : "Send to my email"}

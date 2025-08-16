@@ -1,4 +1,4 @@
-import "./lib/supabase.ts"
+import "./lib/supabase.ts"//promise me that we run this code one time(saves him in cache)
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter, Routes, Route } from "react-router-dom";

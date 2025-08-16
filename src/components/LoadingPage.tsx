@@ -6,7 +6,8 @@ export default function LoadPage() {
   const didRun = useRef(false);//valuable that dont render when he changed 
 
   useEffect(() => {
-    if (didRun.current) return; // avoid two useEffect run from strictMode in react(this is a problem redirect two times 401 problem)
+    if (didRun.current) return; // avoid two useEffect run from strictMode in react
+    // (this is a problem redirect two times+imagine in the second run I revert to /login so window.location wrong)
     didRun.current = true;
 
     (async () => {
@@ -24,7 +25,7 @@ export default function LoadPage() {
         }
 
         //if there is a session go to app and he decide todopage or authpage else /login 
-        window.location.replace(session ? "/" : "/login");
+        window.location.replace(session ? "/" : "/login");// "/"" go to <App />
       } catch {
         // clean the url and back to /login 
         window.history.replaceState({}, document.title, window.location.pathname);

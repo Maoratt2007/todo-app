@@ -1,6 +1,4 @@
 import { useState, useEffect } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
 import {supabase} from "./lib/supabase"
 import AuthPage from './components/AuthPage'
@@ -33,6 +31,7 @@ export default function App() {
     });
     const{data:sub}=supabase.auth.onAuthStateChange((_evt,session)=>{
       //_evt is a action that you did(logout,login,refreshsession....)
+      //the sdk of supabse "shoots" events when we do new actions(login, logout...)
       if(!isMounted) return;
       setGate({status: "ready", hasSession: !!session})
       //this function return the object that allows us "listening" to actions
