@@ -101,12 +101,57 @@ export default function TodoPage(){
         setTodos((prev) => prev.map((t) => (t.id === id ? (data as Todo) : t)));//change the old object to the new from the object we've got from the select().single()
 
       }
-
-
-
-
-
-
+      
+      //toggles functions
+      //delete complete 
+      async function deleteComplete(){
+        setErr(null);
+        const {data:{user}, error:authErr}=await supabase.auth.getUser();
+        if (authErr || !user){
+          //if there is no user connected or we've got an error we'll do setError
+           setErr("Not signed in"); 
+           return;
+        }
+        const { error } = await supabase
+        .from("todos")
+        .delete()
+        .eq("user_id", user.id)
+        .eq("completed", true);//delete only the mission of our customer+completed
+        if (error){
+           setErr(error.message);
+            return; 
+          }
+        setTodos(prev => prev.filter(t => !t.completed));//remains in the array on;y missions who doesnt complete
+      }
+      //if there is *at least* one or more missions who doesn't complete we make all the missions completed 
+      async function toggleAll() {
+        setErr(null);
+        const { data: { user }, error: authErr } = await supabase.auth.getUser();
+        if (authErr || !user){ 
+          setErr("Not signed in");
+           return; 
+          }
+      
+        const next = todos.some(t => !t.completed);//is there any mission who uncompleted?-booliean varible 
+      
+        //if yes we make all of them completed else we do this uncompleted
+        const { error } = await supabase
+          .from("todos")
+          .update({ completed: next })
+          .eq("user_id", user.id);
+      
+        if (error){
+           setErr(error.message);
+            return; 
+          }
+      
+        setTodos(prev => prev.map(t => ({ ...t, completed: next })));//...t copy all the fields of object t to new object that completed their is next
+      }
+      //validation for input in the date(we want the date make sence- you cant define mission who has date of week ago)
+      function todayLocalISO() {
+        const d = new Date();//create date with the current time 
+        return d.toISOString().slice(0, 10);//take obly the date(no time)
+      }
 
       return (
         <div style={{ maxWidth: 720, margin: "40px auto", display: "grid", gap: 16 }}>
@@ -130,7 +175,7 @@ export default function TodoPage(){
                 <option value="med">med</option>
                 <option value="high">high</option>
               </select>
-              <input type="date" value={dueDate} onChange={(e) => setDue(e.target.value)} />
+              <input type="date" value={dueDate} onChange={(e) => setDue(e.target.value)}  min={todayLocalISO()} />
               <button type="submit" disabled={adding || !title.trim()} style={{ marginLeft: "auto" }}>
                 {adding ? "Adding…" : "Add"}
               </button>
@@ -140,7 +185,28 @@ export default function TodoPage(){
           {loading && <p>Loading…</p>}
           {err && <p style={{ color: "crimson" }}>{err}</p>}
           {!loading && todos.length === 0 && <p style={{ opacity: 0.7 }}>No todos yet. Add your first one above.</p>}
-      
+
+          {/* Bulk actions */}
+          {!loading && todos.length > 0 && (
+            <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                  <button type="button" onClick={toggleAll}>
+                    Toggle All
+                  </button>
+                  <button
+                    type="button"
+                    onClick={deleteComplete}
+                    disabled={!todos.some(t => t.completed)} // if we dont have something to delete(all of the missions commpleted) the button disable
+                  >
+                    Delete Completed
+                  </button>
+
+                  {/* tells me how much missions are completed */}
+                  <span style={{ marginLeft: "auto", fontSize: 12, opacity: 0.8 }}>
+                   {todos.filter(t => t.completed).length}/{todos.length} completed
+                   </span>
+                </div>
+           )}
+
           {/* List */}
           <ul style={{ display: "grid", gap: 8, listStyle: "none", padding: 0 }}>
             {/*lifeStyle says without points+we scan all todos array and when we will change something it will do render so it will update in our screen */}
