@@ -52,8 +52,9 @@ export default function TodoPage(){
         setAdding(true);
         setErr(null);
         //build object to insert
-        const { data: u } = await supabase.auth.getUser();
+        const { data: u } = await supabase.auth.getUser();//get the connected customer from the supabase function that deals with the session+we changed the name from data to u
         if (!u?.user){ 
+          //if u exist(not null|undefined) go to u.user else return undefined- you checked in this if two things-1.u exist 2. u.user exist
            setErr("Not signed in");
            return; 
           }
