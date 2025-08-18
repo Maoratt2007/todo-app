@@ -52,7 +52,13 @@ export default function TodoPage(){
         setAdding(true);
         setErr(null);
         //build object to insert
+        const { data: u } = await supabase.auth.getUser();
+        if (!u?.user){ 
+           setErr("Not signed in");
+           return; 
+          }
         const mission = {
+            user_id:u.user.id,
             title: title.trim(),
             description: description.trim() || null, //description will be null if we dont give hm a value
             due_date: dueDate || null,
