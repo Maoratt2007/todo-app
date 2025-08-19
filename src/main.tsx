@@ -4,8 +4,8 @@ import { createRoot } from 'react-dom/client'
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import './index.css'
 import App from './App.tsx'
-import LoadPage from './components/LoadingPage.tsx';
-import AuthPage from "./components/AuthPage.tsx";
+import LoadPage from './pages/LoadingPage.tsx';
+import AuthPage from "./pages/AuthPage.tsx";
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

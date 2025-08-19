@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
 import './App.css'
 import {supabase} from "./lib/supabase"
-import AuthPage from './components/AuthPage'
-import TodoPage from './components/TodoPage'
+import AuthPage from './pages/AuthPage'
+import TodoPage from './pages/TodoPage'
 
 type Gate=|{status: "loading"}|{status:"ready"; hasSession:boolean}|{status:"error"; message:string}
 // varbile with type Gate can be only loading-check if we have session, 
