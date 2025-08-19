@@ -17,6 +17,10 @@ export default function TodoPage(){
     const[todos,setTodos]=useState<Todo[]>([]);//we want define an array that gets and contains all the rows of missions
     const[loading,setLoading]=useState(false);//says if we are in process get the missions from our supabase
     const[err,setErr]=useState<string|null>(null);//if we have any problem in this process...
+    //for filters
+    const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'completed' | 'due-today'>('all');
+    const [prioFilter, setPrioFilter] = useState<'' | 'low' | 'med' | 'high'>('');
+
 
     //states for the errors
     const [title, setTitle] = useState("");
@@ -152,6 +156,30 @@ export default function TodoPage(){
         const d = new Date();//create date with the current time 
         return d.toISOString().slice(0, 10);//take obly the date(no time)
       }
+      //functions for filters 
+      const isDueToday = (d: string | null) => !!d && d === todayLocalISO();//the date not null and toaay
+
+      //bold the chosen 
+      const btnStyle = (active: boolean): React.CSSProperties => ({
+        padding: 6,
+        borderRadius: 8,
+        border: '1px solid #ccc',
+        background: active ? '#111' : '#fff',
+        color: active ? '#fff' : '#111',
+        cursor: 'pointer'
+      });
+
+      //make the list per filter 
+      const view = todos.filter((t) => {
+        const byStatus =
+          statusFilter === 'all' ? true : //if statusFilter "all" so we remains all(true)
+          statusFilter === 'active' ? !t.completed ://we remain only the uncompleted missions
+          statusFilter === 'completed' ? t.completed ://we remain only the completed missions
+          isDueToday(t.due_date); // we remain only missions due today
+      
+        const byPrio = prioFilter ? t.priority === prioFilter : true;// if there is any prioFilter the mission must be equals to priority else(we dont hav a priority) make it true(shows all the mission)  
+        return byStatus && byPrio;//the mission will be in the view list if she fullfill all the conditions
+      });//filter remains only per the byStatus
 
       return (
         <div style={{ maxWidth: 720, margin: "40px auto", display: "grid", gap: 16 }}>
@@ -185,6 +213,39 @@ export default function TodoPage(){
           {loading && <p>Loading…</p>}
           {err && <p style={{ color: "crimson" }}>{err}</p>}
           {!loading && todos.length === 0 && <p style={{ opacity: 0.7 }}>No todos yet. Add your first one above.</p>}
+          {!loading && todos.length > 0 && view.length === 0 && ( <p style={{ opacity: 0.7 }}>No todos match the current filters.</p>)}
+          {/* the filters buttons */}
+          {/* Filters */}
+          <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+            <div style={{ display: "flex", gap: 6 }}>
+              <button style={btnStyle(statusFilter === 'all')} onClick={() => setStatusFilter('all')}>All</button>
+              <button style={btnStyle(statusFilter === 'active')} onClick={() => setStatusFilter('active')}>Active</button>
+              <button style={btnStyle(statusFilter === 'completed')} onClick={() => setStatusFilter('completed')}>Completed</button>
+              <button style={btnStyle(statusFilter === 'due-today')} onClick={() => setStatusFilter('due-today')}>Due Today</button>
+            </div>
+
+            <div style={{ display: "flex", gap: 6, marginLeft: "auto", alignItems: "center" }}>
+              <span style={{ fontSize: 12, opacity: 0.8 }}>Priority:</span>
+              <select value={prioFilter} onChange={(e) => setPrioFilter(e.target.value as any)}>
+                <option value="">All</option>
+                <option value="high">high</option>
+                <option value="med">med</option>
+                <option value="low">low</option>
+              </select>
+
+              {/* back all the situation to initiate  */}
+              {(statusFilter !== 'all' || prioFilter) && (
+                <button
+                  type="button"
+                  onClick={() => { setStatusFilter('all'); setPrioFilter(''); }}
+                  style={{ padding: 6, borderRadius: 8, border: "1px solid #ccc", cursor: "pointer" }}
+                >
+                  Clear
+                </button>
+              )}
+            </div>
+          </div>
+
 
           {/* Bulk actions */}
           {!loading && todos.length > 0 && (
@@ -210,7 +271,7 @@ export default function TodoPage(){
           {/* List */}
           <ul style={{ display: "grid", gap: 8, listStyle: "none", padding: 0 }}>
             {/*lifeStyle says without points+we scan all todos array and when we will change something it will do render so it will update in our screen */}
-            {todos.map((t) => (
+            {view.map((t) => (
               <li key={t.id} style={{ border: "1px solid #eee", borderRadius: 10, padding: 12, display: "grid", gap: 8 }}>
                 <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
                   <input
